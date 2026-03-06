@@ -1,0 +1,106 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #ffe6f0);
+    text-align: center;
+}
+
+.container {
+    width: 500px;
+    margin: 120px auto;
+    padding: 40px;
+    background: #fff5f7;
+    border-radius: 15px;
+    box-shadow: 0 12px 35px rgba(157, 23, 77, 0.15);
+}
+
+/* Main Title */
+h1 {
+    font-size: 42px;
+    color: #764ba2;
+    margin-bottom: 15px;
+}
+
+/* Tagline */
+p {
+    font-size: 20px;
+    color: #444;
+    margin-bottom: 30px;
+}
+
+/* Form Layout */
+
+.form-row{
+    display: block;
+    text-align: left;
+    margin-bottom: 15px;
+}
+/* Labels */
+
+label{
+    display:block;
+    font-size:16px;
+    margin-top:10px;
+}
+
+select,
+input{
+    width:100%;
+    padding:6px;
+    margin-top:5px;
+    font-size:14px;
+}
+
+/* Inputs and Select */
+
+select,
+input{
+    padding:6px;
+    font-size:14px;
+}
+
+/* Quantity input width */
+
+input[type="number"]{
+    width:120px;
+}
+
+/* Buttons */
+
+button, .btn {
+    display: inline-block;
+    padding: 12px 30px;
+    margin: 10px;
+    background: #9d174d;
+    color: white;
+    font-size: 18px;
+    border-radius: 8px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover, .btn:hover {
+    background: #c21873;
+    transform: scale(1.05);
+}
+
+/* Logout Button */
+
+.logout-btn{
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    background: #9d174d;
+    color: white;
+    padding: 10px 25px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.logout-btn:hover{
+    background: #c21873;
+    transform: scale(1.05);
+}
