@@ -8,25 +8,41 @@ const path = require("path");
 
 const app = express();
 
+/* ================= MIDDLEWARE ================= */
+
 app.use(cors());
 app.use(express.json());
 
 console.log("SERVER FILE LOADED");
 
-/* SERVE FRONTEND FILES */
+/* ================= SERVE FRONTEND ================= */
+
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-/* SUPABASE DATABASE CONNECTION */
+/* ================= DATABASE CONNECTION ================= */
+
 const pool = new Pool({
     connectionString: process.env.DB_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
-/* EMAIL CONFIGURATION */
+/* Test DB connection */
+pool.connect()
+.then(() => {
+    console.log("Connected to PostgreSQL Database");
+})
+.catch((err) => {
+    console.error("Database connection error:", err);
+});
+
+/* ================= EMAIL CONFIG ================= */
+
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -35,7 +51,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-/* REGISTER API */
+/* ================= REGISTER API ================= */
+
 app.post("/register", async (req, res) => {
 
     const { name, email, password } = req.body;
@@ -47,20 +64,21 @@ app.post("/register", async (req, res) => {
         VALUES ($1,$2,$3)
         `;
 
-        await pool.query(sql,[name,email,password]);
+        await pool.query(sql, [name, email, password]);
 
         res.send("Registration Successful");
 
-    } catch(err){
+    } catch (err) {
 
-        console.log(err);
+        console.error("Register Error:", err);
         res.status(500).send("Registration error");
 
     }
 
 });
 
-/* LOGIN API */
+/* ================= LOGIN API ================= */
+
 app.post("/login", async (req, res) => {
 
     const { email, password } = req.body;
@@ -69,36 +87,37 @@ app.post("/login", async (req, res) => {
         return res.send("Admin Login");
     }
 
-    try{
+    try {
 
         const sql = `
         SELECT * FROM users
         WHERE email=$1 AND password=$2
         `;
 
-        const result = await pool.query(sql,[email,password]);
+        const result = await pool.query(sql, [email, password]);
 
-        if(result.rows.length > 0){
+        if (result.rows.length > 0) {
             res.send("User Login");
-        }else{
+        } else {
             res.status(401).send("Invalid Email or Password");
         }
 
-    }catch(err){
+    } catch (err) {
 
-        console.log(err);
+        console.error("Login Error:", err);
         res.status(500).send("Server error");
 
     }
 
 });
 
-/* BOOKING API */
+/* ================= BOOKING API ================= */
+
 app.post("/book", async (req, res) => {
 
     const { email, eventType, foodType, quantity, total } = req.body;
 
-    try{
+    try {
 
         const sql = `
         INSERT INTO bookings
@@ -106,7 +125,7 @@ app.post("/book", async (req, res) => {
         VALUES ($1,$2,$3,$4,$5)
         `;
 
-        await pool.query(sql,[email,eventType,foodType,quantity,total]);
+        await pool.query(sql, [email, eventType, foodType, quantity, total]);
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -124,31 +143,32 @@ Thank you for choosing NehaCaterPro!
 `
         };
 
-        transporter.sendMail(mailOptions,(error,info)=>{
+        transporter.sendMail(mailOptions, (error, info) => {
 
-            if(error){
-                console.log(error);
+            if (error) {
+                console.error("Email Error:", error);
                 return res.send("Booking saved but email failed");
             }
 
-            console.log("Email sent:",info.response);
+            console.log("Email sent:", info.response);
             res.send("Booking saved and confirmation email sent!");
 
         });
 
-    }catch(err){
+    } catch (err) {
 
-        console.log(err);
+        console.error("Booking Error:", err);
         res.status(500).send("Booking failed");
 
     }
 
 });
 
-/* ADMIN BOOKINGS */
-app.get("/bookings", async (req,res)=>{
+/* ================= ADMIN BOOKINGS ================= */
 
-    try{
+app.get("/bookings", async (req, res) => {
+
+    try {
 
         const result = await pool.query(`
         SELECT * FROM bookings
@@ -157,16 +177,17 @@ app.get("/bookings", async (req,res)=>{
 
         res.json(result.rows);
 
-    }catch(err){
+    } catch (err) {
 
-        console.log(err);
+        console.error("Fetch Bookings Error:", err);
         res.status(500).send("Error fetching bookings");
 
     }
 
 });
 
-/* SERVER START */
+/* ================= SERVER START ================= */
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
