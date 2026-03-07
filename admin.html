@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+
+<body>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+<div class="container">
+
+<h2>All Bookings</h2>
+
+
+
+</div>
+
+<script>
+
+async function loadBookings(){
+
+    const response = await fetch("http://localhost:5000/bookings");
+    const bookings = await response.json();
+
+    const container = document.querySelector(".container");
+
+    let grouped = {};
+
+    bookings.forEach(b => {
+
+        const date = new Date(b.booking_time).toLocaleDateString();
+
+        if(!grouped[date]){
+            grouped[date] = [];
+        }
+
+        grouped[date].push(b);
+
+    });
+
+    Object.keys(grouped).forEach(date => {
+
+        const section = document.createElement("div");
+
+        section.innerHTML = `
+        <h3>📅 ${date}</h3>
+
+        <table border="1">
+        <tr>
+        <th>ID</th>
+        <th>Event</th>
+        <th>Food</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+        <th>Time</th>
+        </tr>
+        </table>
+        `;
+
+        const table = section.querySelector("table");
+
+        grouped[date].forEach(b => {
+
+            const row = table.insertRow();
+
+            row.insertCell(0).innerText = b.id;
+            row.insertCell(1).innerText = b.event_type;
+            row.insertCell(2).innerText = b.food_type;
+            row.insertCell(3).innerText = b.quantity;
+            row.insertCell(4).innerText = b.total_price;
+
+            const time = new Date(b.booking_time).toLocaleTimeString();
+            row.insertCell(5).innerText = time;
+
+        });
+
+        container.appendChild(section);
+
+    });
+
+}
+
+loadBookings();
+
+</script>
+
+</body>
+</html>
