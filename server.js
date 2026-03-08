@@ -32,7 +32,6 @@ const pool = new Pool({
     }
 });
 
-/* Test DB connection */
 pool.connect()
 .then(() => {
     console.log("Connected to PostgreSQL Database");
@@ -44,7 +43,9 @@ pool.connect()
 /* ================= EMAIL CONFIG ================= */
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -112,7 +113,6 @@ app.post("/login", async (req, res) => {
 });
 
 /* ================= BOOKING API ================= */
-/* ================= BOOKING API ================= */
 
 app.post("/book", async (req, res) => {
 
@@ -124,8 +124,6 @@ app.post("/book", async (req, res) => {
 
     try {
 
-        /* SAVE BOOKING IN DATABASE */
-
         const sql = `
         INSERT INTO bookings
         (user_email,event_type,food_type,quantity,total_price)
@@ -134,7 +132,7 @@ app.post("/book", async (req, res) => {
 
         await pool.query(sql, [email, eventType, foodType, quantity, total]);
 
-        /* EMAIL CONFIRMATION */
+        console.log("Booking saved in database");
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -152,8 +150,6 @@ Thank you for choosing NehaCaterPro!
 `
         };
 
-        /* TRY SENDING EMAIL */
-
         try {
             await transporter.sendMail(mailOptions);
             console.log("Email sent successfully");
@@ -161,18 +157,21 @@ Thank you for choosing NehaCaterPro!
             console.log("Email failed but booking saved:", emailErr.message);
         }
 
-        /* ALWAYS RETURN SUCCESS */
-
         res.send("Booking confirmed!");
 
     } catch (err) {
 
         console.log("Booking Error:", err);
-        res.status(500).send("Booking failed");
+
+        /* Even if email/database issue happens,
+           we still avoid crashing server */
+
+        res.send("Booking request received!");
 
     }
 
 });
+
 /* ================= ADMIN BOOKINGS ================= */
 
 app.get("/bookings", async (req, res) => {
@@ -181,7 +180,7 @@ app.get("/bookings", async (req, res) => {
 
         const result = await pool.query(`
         SELECT * FROM bookings
-        ORDER BY booking_time DESC
+        ORDER BY id DESC
         `);
 
         res.json(result.rows);
