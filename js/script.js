@@ -87,9 +87,28 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
     const foodType = document.getElementById("foodType").value;
     const quantity = parseInt(document.getElementById("quantity").value);
 
+    /* get logged user email */
     const email = localStorage.getItem("userEmail");
 
-    let price = foodType === "Veg" ? 300 : 500;
+    if(!email){
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    /* price calculation */
+    let price = 0;
+
+    if(foodType === "Veg") price = 300;
+    else if(foodType === "NonVeg") price = 500;
+    else if(foodType === "Vegan") price = 350;
+    else if(foodType === "Jain") price = 320;
+    else if(foodType === "SouthIndian") price = 400;
+    else if(foodType === "NorthIndian") price = 420;
+    else if(foodType === "Korean") price = 500;
+    else if(foodType === "MultiCuisine") price = 600;
+    else if(foodType === "Chinese") price = 450;
+
     const total = price * quantity;
 
     document.getElementById("totalPrice").innerText = "Total: ₹" + total;

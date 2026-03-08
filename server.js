@@ -114,7 +114,11 @@ app.post("/login", async (req, res) => {
 /* ================= BOOKING API ================= */
 app.post("/book", async (req, res) => {
 
-    const { email, eventType, foodType, quantity, total } = req.body;
+    const { eventType, foodType, quantity, total, email } = req.body;
+
+    if (!email) {
+        return res.status(400).send("Email missing");
+    }
 
     try {
 
@@ -124,7 +128,9 @@ app.post("/book", async (req, res) => {
         VALUES ($1,$2,$3,$4,$5)
         `;
 
-        await pool.query(sql,[email,eventType,foodType,quantity,total]);
+        await pool.query(sql, [email, eventType, foodType, quantity, total]);
+
+        /* EMAIL CONFIRMATION */
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -149,7 +155,7 @@ Thank you for choosing NehaCaterPro!
             console.log("Email failed but booking saved:", emailErr.message);
         }
 
-        res.send("Booking confirmed!");
+        res.json({ message: "Booking confirmed!" });
 
     } catch (err) {
         console.log("Booking Error:", err);
