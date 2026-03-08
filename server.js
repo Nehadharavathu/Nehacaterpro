@@ -143,17 +143,14 @@ Thank you for choosing NehaCaterPro!
 `
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
+        try {
+    await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully");
+} catch (err) {
+    console.log("Email failed but booking saved:", err.message);
+}
 
-            if (error) {
-                console.error("Email Error:", error);
-                return res.send("Booking saved but email failed");
-            }
-
-            console.log("Email sent:", info.response);
-            res.send("Booking saved and confirmation email sent!");
-
-        });
+res.send("Booking confirmed!");
 
     } catch (err) {
 
