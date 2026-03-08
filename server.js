@@ -112,7 +112,6 @@ app.post("/login", async (req, res) => {
 });
 
 /* ================= BOOKING API ================= */
-
 app.post("/book", async (req, res) => {
 
     const { email, eventType, foodType, quantity, total } = req.body;
@@ -125,7 +124,7 @@ app.post("/book", async (req, res) => {
         VALUES ($1,$2,$3,$4,$5)
         `;
 
-        await pool.query(sql, [email, eventType, foodType, quantity, total]);
+        await pool.query(sql,[email,eventType,foodType,quantity,total]);
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -136,7 +135,7 @@ Booking Confirmed!
 
 Event: ${eventType}
 Food: ${foodType}
-Number of Plates: ${quantity}
+Plates: ${quantity}
 Total Price: ₹${total}
 
 Thank you for choosing NehaCaterPro!
@@ -144,21 +143,18 @@ Thank you for choosing NehaCaterPro!
         };
 
         try {
-    await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully");
-} catch (err) {
-    console.log("Email failed but booking saved:", err.message);
-}
+            await transporter.sendMail(mailOptions);
+            console.log("Email sent successfully");
+        } catch (emailErr) {
+            console.log("Email failed but booking saved:", emailErr.message);
+        }
 
-res.send("Booking confirmed!");
+        res.send("Booking confirmed!");
 
     } catch (err) {
-
-        console.error("Booking Error:", err);
+        console.log("Booking Error:", err);
         res.status(500).send("Booking failed");
-
     }
-
 });
 
 /* ================= ADMIN BOOKINGS ================= */
