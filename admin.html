@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <title>Admin Dashboard</title>
 <link rel="stylesheet" href="css/style.css">
@@ -12,74 +13,75 @@
 
 <div class="container">
 
-<h2>All Bookings</h2>
+<h2>📋 All Bookings</h2>
 
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>ID</th>
+<th>User Email</th>
+<th>Event</th>
+<th>Food</th>
+<th>Quantity</th>
+<th>Total Price</th>
+</tr>
+</thead>
 
+<tbody id="bookingTable">
+
+</tbody>
+
+</table>
 
 </div>
 
 <script>
 
+/* LOGOUT */
+
+function logout(){
+localStorage.clear();
+window.location.href = "index.html";
+}
+
+
+/* LOAD BOOKINGS */
+
 async function loadBookings(){
 
-    const response = await fetch("http://localhost:5000/bookings");
-    const bookings = await response.json();
+try{
 
-    const container = document.querySelector(".container");
+const response = await fetch("/bookings");
+const bookings = await response.json();
 
-    let grouped = {};
+const table = document.getElementById("bookingTable");
 
-    bookings.forEach(b => {
+table.innerHTML = "";
 
-        const date = new Date(b.booking_time).toLocaleDateString();
+bookings.forEach(b => {
 
-        if(!grouped[date]){
-            grouped[date] = [];
-        }
+const row = `
+<tr>
+<td>${b.id}</td>
+<td>${b.user_email}</td>
+<td>${b.event_type}</td>
+<td>${b.food_type}</td>
+<td>${b.quantity}</td>
+<td>₹${b.total_price}</td>
+</tr>
+`;
 
-        grouped[date].push(b);
+table.innerHTML += row;
 
-    });
+});
 
-    Object.keys(grouped).forEach(date => {
+}
+catch(error){
 
-        const section = document.createElement("div");
+console.log(error);
+alert("Failed to load bookings");
 
-        section.innerHTML = `
-        <h3>📅 ${date}</h3>
-
-        <table border="1">
-        <tr>
-        <th>ID</th>
-        <th>Event</th>
-        <th>Food</th>
-        <th>Quantity</th>
-        <th>Total Price</th>
-        <th>Time</th>
-        </tr>
-        </table>
-        `;
-
-        const table = section.querySelector("table");
-
-        grouped[date].forEach(b => {
-
-            const row = table.insertRow();
-
-            row.insertCell(0).innerText = b.id;
-            row.insertCell(1).innerText = b.event_type;
-            row.insertCell(2).innerText = b.food_type;
-            row.insertCell(3).innerText = b.quantity;
-            row.insertCell(4).innerText = b.total_price;
-
-            const time = new Date(b.booking_time).toLocaleTimeString();
-            row.insertCell(5).innerText = time;
-
-        });
-
-        container.appendChild(section);
-
-    });
+}
 
 }
 
