@@ -81,8 +81,6 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
 
 /* ================= BOOKING ================= */
 
-/* ================= BOOKING ================= */
-
 document.getElementById("bookingForm")?.addEventListener("submit", async function(e){
 
     e.preventDefault();
@@ -129,12 +127,16 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
             })
         });
 
-        const message = await response.text();
-
         if(response.ok){
+
+            // Redirect to success page
             window.location.href = "success.html";
-        } else {
+
+        } 
+        else{
+
             alert("Booking failed");
+
         }
 
     } catch(error){
@@ -145,3 +147,39 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
     }
 
 });
+
+
+/* ================= AUTO TOTAL CALCULATION ================= */
+
+const quantityInput = document.getElementById("quantity");
+const foodSelect = document.getElementById("foodType");
+
+function updateTotal(){
+
+    const quantity = parseInt(quantityInput.value) || 0;
+    const foodType = foodSelect.value;
+
+    let price = 0;
+
+    if(foodType === "Veg") price = 300;
+    else if(foodType === "NonVeg") price = 500;
+    else if(foodType === "Vegan") price = 350;
+    else if(foodType === "Jain") price = 320;
+    else if(foodType === "SouthIndian") price = 400;
+    else if(foodType === "NorthIndian") price = 420;
+    else if(foodType === "Korean") price = 500;
+    else if(foodType === "MultiCuisine") price = 600;
+    else if(foodType === "Chinese") price = 450;
+
+    const total = price * quantity;
+
+    const totalDisplay = document.getElementById("totalPrice");
+
+    if(totalDisplay){
+        totalDisplay.innerText = "Total: ₹" + total;
+    }
+
+}
+
+quantityInput?.addEventListener("input", updateTotal);
+foodSelect?.addEventListener("change", updateTotal);
