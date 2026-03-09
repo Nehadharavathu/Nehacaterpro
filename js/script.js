@@ -57,7 +57,6 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
         });
 
         const message = await response.text();
-        alert(message);
 
         if(message === "Admin Login"){
             window.location.href = "admin.html";
@@ -65,6 +64,9 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
         else if(message === "User Login"){
             localStorage.setItem("userEmail", email);
             window.location.href = "booking.html";
+        }
+        else{
+            alert(message);
         }
 
     } catch (error) {
@@ -130,8 +132,9 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
         const message = await response.text();
 
         if(response.ok){
-            alert(message);
-        } else {
+            window.location.href = "success.html";
+        } 
+        else {
             alert("Booking failed");
         }
 
