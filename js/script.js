@@ -81,6 +81,8 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
 
 /* ================= BOOKING ================= */
 
+/* ================= BOOKING ================= */
+
 document.getElementById("bookingForm")?.addEventListener("submit", async function(e){
 
     e.preventDefault();
@@ -96,8 +98,6 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
         window.location.href = "login.html";
         return;
     }
-
-    /* price calculation */
 
     let price = 0;
 
@@ -133,8 +133,7 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
 
         if(response.ok){
             window.location.href = "success.html";
-        } 
-        else {
+        } else {
             alert("Booking failed");
         }
 
