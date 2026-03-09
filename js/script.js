@@ -87,7 +87,6 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
     const foodType = document.getElementById("foodType").value;
     const quantity = parseInt(document.getElementById("quantity").value);
 
-    /* get logged user email */
     const email = localStorage.getItem("userEmail");
 
     if(!email){
@@ -97,6 +96,7 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
     }
 
     /* price calculation */
+
     let price = 0;
 
     if(foodType === "Veg") price = 300;
@@ -110,8 +110,6 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
     else if(foodType === "Chinese") price = 450;
 
     const total = price * quantity;
-
-    document.getElementById("totalPrice").innerText = "Total: ₹" + total;
 
     try {
 
@@ -130,12 +128,17 @@ document.getElementById("bookingForm")?.addEventListener("submit", async functio
         });
 
         const message = await response.text();
-        alert(message);
 
-    } catch(error) {
+        if(response.ok){
+            alert(message);
+        } else {
+            alert("Booking failed");
+        }
+
+    } catch(error){
 
         console.error(error);
-        alert("Booking failed");
+        alert("Server connection error");
 
     }
 

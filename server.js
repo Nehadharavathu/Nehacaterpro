@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
 const path = require("path");
 
 const app = express();
@@ -40,18 +39,6 @@ pool.connect()
     console.error("Database connection error:", err);
 });
 
-/* ================= EMAIL CONFIG ================= */
-
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
 /* ================= REGISTER API ================= */
 
 app.post("/register", async (req, res) => {
@@ -67,7 +54,7 @@ app.post("/register", async (req, res) => {
 
         await pool.query(sql, [name, email, password]);
 
-        res.send("Registration Successful");
+        res.status(200).send("Registration Successful");
 
     } catch (err) {
 
@@ -134,39 +121,12 @@ app.post("/book", async (req, res) => {
 
         console.log("Booking saved in database");
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: "Booking Confirmation - NehaCaterPro",
-            text: `
-Booking Confirmed!
-
-Event: ${eventType}
-Food: ${foodType}
-Plates: ${quantity}
-Total Price: ₹${total}
-
-Thank you for choosing NehaCaterPro!
-`
-        };
-
-        try {
-            await transporter.sendMail(mailOptions);
-            console.log("Email sent successfully");
-        } catch (emailErr) {
-            console.log("Email failed but booking saved:", emailErr.message);
-        }
-
-        res.send("Booking confirmed!");
+        res.status(200).send("Booking confirmed!");
 
     } catch (err) {
 
         console.log("Booking Error:", err);
-
-        /* Even if email/database issue happens,
-           we still avoid crashing server */
-
-        res.send("Booking request received!");
+        res.status(500).send("Booking failed");
 
     }
 
